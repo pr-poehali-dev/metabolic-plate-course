@@ -1,5 +1,8 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/context/AuthContext";
 
 const completedLessons = [1, 2, 5];
 
@@ -16,8 +19,26 @@ const materials = [
 ];
 
 export default function Cabinet() {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const totalLessons = 12;
   const progress = Math.round((completedLessons.length / totalLessons) * 100);
+
+  useEffect(() => {
+    if (!loading && !user) navigate("/auth");
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <Icon name="Loader2" size={32} className="animate-spin text-[var(--olive)]" />
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!user) return null;
 
   return (
     <Layout>
@@ -31,7 +52,7 @@ export default function Cabinet() {
               <h1 className="font-display text-3xl md:text-4xl font-semibold text-[var(--graphite)]">
                 Личный кабинет
               </h1>
-              <p className="font-body text-[var(--warm-gray)] text-sm">Добро пожаловать!</p>
+              <p className="font-body text-[var(--warm-gray)] text-sm">Добро пожаловать, {user.name}!</p>
             </div>
           </div>
         </div>
@@ -39,7 +60,6 @@ export default function Cabinet() {
 
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-5xl">
-          {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-10">
             <div className="bg-white border border-[var(--olive-pale)] rounded-2xl p-6 text-center">
               <p className="font-display text-4xl font-semibold text-[var(--olive)] mb-1">{completedLessons.length}</p>
@@ -55,22 +75,17 @@ export default function Cabinet() {
             </div>
           </div>
 
-          {/* Progress bar */}
           <div className="bg-white border border-[var(--olive-pale)] rounded-2xl p-6 mb-8">
             <div className="flex justify-between items-center mb-3">
               <span className="font-body font-medium text-sm text-[var(--graphite)]">Общий прогресс</span>
               <span className="font-body text-sm text-[var(--olive)]">{progress}%</span>
             </div>
             <div className="h-2.5 bg-[var(--olive-pale)] rounded-full overflow-hidden">
-              <div
-                className="progress-bar h-full"
-                style={{ width: `${progress}%` }}
-              />
+              <div className="progress-bar h-full" style={{ width: `${progress}%` }} />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Continue lessons */}
             <div className="bg-white border border-[var(--olive-pale)] rounded-2xl p-6">
               <h2 className="font-display text-xl font-semibold text-[var(--graphite)] mb-4 flex items-center gap-2">
                 <Icon name="Play" size={18} className="text-[var(--olive)]" />
@@ -78,7 +93,7 @@ export default function Cabinet() {
               </h2>
               <div className="space-y-3">
                 {recentLessons.map((lesson) => (
-                  <div key={lesson.id} className="flex items-center gap-3 p-3 bg-[var(--olive-pale)] rounded-xl hover:bg-[var(--olive-pale)] cursor-pointer group">
+                  <div key={lesson.id} className="flex items-center gap-3 p-3 bg-[var(--olive-pale)] rounded-xl cursor-pointer group">
                     <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shrink-0">
                       <Icon name="Play" size={13} className="text-[var(--olive)]" />
                     </div>
@@ -97,7 +112,6 @@ export default function Cabinet() {
               </div>
             </div>
 
-            {/* Materials */}
             <div className="bg-white border border-[var(--olive-pale)] rounded-2xl p-6">
               <h2 className="font-display text-xl font-semibold text-[var(--graphite)] mb-4 flex items-center gap-2">
                 <Icon name="FolderOpen" size={18} className="text-[var(--olive)]" />

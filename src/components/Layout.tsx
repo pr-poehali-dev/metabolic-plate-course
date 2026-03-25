@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Icon from "@/components/ui/icon";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { to: "/", label: "Главная" },
@@ -13,7 +14,15 @@ const navLinks = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { user, logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+    setMenuOpen(false);
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-[var(--cream)]">
@@ -37,13 +46,32 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="/cabinet"
-              className="hidden md:flex items-center gap-1.5 bg-[var(--olive)] text-[var(--cream)] px-4 py-2 rounded-lg text-sm font-body hover:bg-[var(--olive-light)] transition-colors"
-            >
-              <Icon name="User" size={15} />
-              Личный кабинет
-            </Link>
+            {user ? (
+              <div className="hidden md:flex items-center gap-2">
+                <Link
+                  to="/cabinet"
+                  className="flex items-center gap-1.5 bg-[var(--olive-pale)] text-[var(--graphite)] px-4 py-2 rounded-lg text-sm font-body hover:bg-[var(--olive)] hover:text-[var(--cream)] transition-colors"
+                >
+                  <Icon name="User" size={15} />
+                  {user.name.split(' ')[0]}
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 text-[var(--warm-gray)] hover:text-[var(--graphite)] px-2 py-2 rounded-lg text-sm font-body transition-colors"
+                  title="Выйти"
+                >
+                  <Icon name="LogOut" size={16} />
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                className="hidden md:flex items-center gap-1.5 bg-[var(--olive)] text-[var(--cream)] px-4 py-2 rounded-lg text-sm font-body hover:bg-[var(--olive-light)] transition-colors"
+              >
+                <Icon name="User" size={15} />
+                Войти
+              </Link>
+            )}
             <button
               className="md:hidden p-2 text-[var(--graphite)]"
               onClick={() => setMenuOpen(!menuOpen)}
@@ -65,14 +93,34 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 {link.label}
               </Link>
             ))}
-            <Link
-              to="/cabinet"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-1.5 bg-[var(--olive)] text-[var(--cream)] px-4 py-2 rounded-lg text-sm font-body w-fit mt-1"
-            >
-              <Icon name="User" size={15} />
-              Личный кабинет
-            </Link>
+            {user ? (
+              <div className="flex items-center gap-2 mt-1">
+                <Link
+                  to="/cabinet"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-1.5 bg-[var(--olive-pale)] text-[var(--graphite)] px-4 py-2 rounded-lg text-sm font-body"
+                >
+                  <Icon name="User" size={15} />
+                  Кабинет ({user.name.split(' ')[0]})
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center gap-1 text-[var(--warm-gray)] px-3 py-2 rounded-lg text-sm font-body border border-[var(--olive-pale)]"
+                >
+                  <Icon name="LogOut" size={15} />
+                  Выйти
+                </button>
+              </div>
+            ) : (
+              <Link
+                to="/auth"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-1.5 bg-[var(--olive)] text-[var(--cream)] px-4 py-2 rounded-lg text-sm font-body w-fit mt-1"
+              >
+                <Icon name="User" size={15} />
+                Войти
+              </Link>
+            )}
           </div>
         )}
       </header>
