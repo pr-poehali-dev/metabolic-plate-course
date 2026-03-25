@@ -34,8 +34,53 @@ const moduleNames: Record<number, string> = {
   3: "Углеводы без страха",
 };
 
+const supplies = {
+  tools: [
+    "Шагомер",
+    "Весы для взвешивания пищи",
+    "Весы-ложка",
+    "Весы для контроля массы тела",
+    "Сантиметровая лента",
+    "Мерная бутылка для воды",
+    "Термос для запаривания углеводов",
+    "Двусторонний гриль (по желанию)",
+    "Контейнеры для пищи",
+    "Шейкер",
+  ],
+  products: [
+    "Пектин без сахара",
+    "Агар без сахара",
+    "Отруби с количеством клетчатки более 40%",
+    "Масло-спрей",
+    "Поливитаминный препарат с микроэлементами",
+    "Протеиновые батончики (много белка, мало углеводов, ноль жиров)",
+    "Казеин очищенный (по желанию)",
+    "Мороженое до 100 ккал",
+    "Петиновое варенье",
+    "Зефир на эритрите (по желанию)",
+    "Цельнозерновая мука (по желанию)",
+    "Нулевой творог до 60 ккал",
+    "Яичные белки",
+    "Кофе, чай",
+  ],
+  food: [
+    "Телятина, говядина вырезка",
+    "Куриная грудка или грудка индейки",
+    "Рыба до 100 ккал, морепродукты",
+    "Крупы любые",
+    "Гарниры любые",
+    "Рыбные консервы в собственном соку",
+    "Овощные консервы",
+    "Маринованные грибы, квашеная капуста",
+    "Овощи любые",
+    "Фрукты и ягоды любые до 50 ккал",
+    "Соусы — кетчуп, аджика, соевый соус, до 100 ккал",
+  ],
+};
+
 export default function Lessons() {
   const [activeModule, setActiveModule] = useState<number | null>(null);
+  const [suppliesOpen, setSuppliesOpen] = useState(false);
 
   const filtered = activeModule ? lessons.filter((l) => l.module === activeModule) : lessons;
   const modules = [1, 2, 3];
@@ -50,6 +95,78 @@ export default function Lessons() {
           <p className="font-body text-lg text-[var(--warm-gray)] max-w-2xl leading-relaxed">
             Видео-уроки с конспектами, PDF-шпаргалками и таблицами
           </p>
+        </div>
+      </section>
+
+      {/* Что понадобится */}
+      <section className="py-10 bg-white border-b border-[var(--olive-pale)]">
+        <div className="container mx-auto px-4 max-w-5xl">
+          <button
+            onClick={() => setSuppliesOpen(!suppliesOpen)}
+            className="w-full flex items-center justify-between gap-4 text-left group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-[var(--olive-pale)] rounded-xl flex items-center justify-center shrink-0">
+                <Icon name="ShoppingBag" size={18} className="text-[var(--olive)]" />
+              </div>
+              <div>
+                <h2 className="font-display text-xl font-semibold text-[var(--graphite)]">Что понадобится</h2>
+                <p className="font-body text-sm text-[var(--warm-gray)]">Инвентарь и продукты для курса</p>
+              </div>
+            </div>
+            <Icon
+              name={suppliesOpen ? "ChevronUp" : "ChevronDown"}
+              size={20}
+              className="text-[var(--olive)] shrink-0 transition-transform"
+            />
+          </button>
+
+          {suppliesOpen && (
+            <div className="mt-6 grid md:grid-cols-3 gap-6">
+              <div className="bg-[var(--olive-pale)] rounded-2xl p-5">
+                <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
+                  <Icon name="Wrench" size={15} className="text-[var(--olive)]" />
+                  Инструменты
+                </h3>
+                <ul className="space-y-2">
+                  {supplies.tools.map((item) => (
+                    <li key={item} className="font-body text-sm text-[var(--graphite)] flex items-start gap-2">
+                      <span className="text-[var(--olive)] mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-[var(--olive-pale)] rounded-2xl p-5">
+                <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
+                  <Icon name="Package" size={15} className="text-[var(--olive)]" />
+                  Добавки и специальные продукты
+                </h3>
+                <ul className="space-y-2">
+                  {supplies.products.map((item) => (
+                    <li key={item} className="font-body text-sm text-[var(--graphite)] flex items-start gap-2">
+                      <span className="text-[var(--olive)] mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="bg-[var(--olive-pale)] rounded-2xl p-5">
+                <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
+                  <Icon name="Utensils" size={15} className="text-[var(--olive)]" />
+                  Продукты питания
+                </h3>
+                <ul className="space-y-2">
+                  {supplies.food.map((item) => (
+                    <li key={item} className="font-body text-sm text-[var(--graphite)] flex items-start gap-2">
+                      <span className="text-[var(--olive)] mt-0.5">•</span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
