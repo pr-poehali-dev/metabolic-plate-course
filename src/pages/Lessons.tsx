@@ -141,9 +141,23 @@ export default function Lessons() {
               </div>
               <div>
                 <h2 className="font-display text-xl font-semibold text-[var(--graphite)]">Что понадобится</h2>
-                <p className="font-body text-sm text-[var(--warm-gray)]">
-                  {checkedCount} из {totalCount} куплено
-                </p>
+                <div className="flex items-center gap-3">
+                  <p className="font-body text-sm text-[var(--warm-gray)]">
+                    {checkedCount} из {totalCount} куплено
+                  </p>
+                  {checkedCount > 0 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setChecked(new Set());
+                        localStorage.removeItem(STORAGE_KEY);
+                      }}
+                      className="font-body text-xs text-[var(--warm-gray)] hover:text-red-400 transition-colors underline underline-offset-2"
+                    >
+                      Сбросить всё
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-3 shrink-0">
