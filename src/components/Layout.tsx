@@ -8,6 +8,7 @@ const navLinks = [
   { to: "/about", label: "О курсе" },
   { to: "/modules", label: "Модули" },
   { to: "/lessons", label: "Уроки" },
+  { to: "/pricing", label: "Тарифы" },
   { to: "/faq", label: "FAQ" },
   { to: "/contacts", label: "Контакты" },
 ];
