@@ -78,9 +78,39 @@ const supplies = {
   ],
 };
 
+const ALL_ITEMS = [
+  ...supplies.tools.map((item) => `tools::${item}`),
+  ...supplies.products.map((item) => `products::${item}`),
+  ...supplies.food.map((item) => `food::${item}`),
+];
+
+const STORAGE_KEY = "supplies_checked";
+
+function loadChecked(): Set<string> {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
 export default function Lessons() {
   const [activeModule, setActiveModule] = useState<number | null>(null);
   const [suppliesOpen, setSuppliesOpen] = useState(false);
+  const [checked, setChecked] = useState<Set<string>>(loadChecked);
+
+  const toggle = (key: string) => {
+    setChecked((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify([...next]));
+      return next;
+    });
+  };
+
+  const checkedCount = checked.size;
+  const totalCount = ALL_ITEMS.length;
 
   const filtered = activeModule ? lessons.filter((l) => l.module === activeModule) : lessons;
   const modules = [1, 2, 3];
@@ -111,60 +141,62 @@ export default function Lessons() {
               </div>
               <div>
                 <h2 className="font-display text-xl font-semibold text-[var(--graphite)]">Что понадобится</h2>
-                <p className="font-body text-sm text-[var(--warm-gray)]">Инвентарь и продукты для курса</p>
+                <p className="font-body text-sm text-[var(--warm-gray)]">
+                  {checkedCount} из {totalCount} куплено
+                </p>
               </div>
             </div>
-            <Icon
-              name={suppliesOpen ? "ChevronUp" : "ChevronDown"}
-              size={20}
-              className="text-[var(--olive)] shrink-0 transition-transform"
-            />
+            <div className="flex items-center gap-3 shrink-0">
+              <div className="hidden sm:flex w-32 h-2 bg-[var(--olive-pale)] rounded-full overflow-hidden">
+                <div
+                  className="h-full bg-[var(--olive)] rounded-full transition-all"
+                  style={{ width: `${totalCount ? (checkedCount / totalCount) * 100 : 0}%` }}
+                />
+              </div>
+              <Icon
+                name={suppliesOpen ? "ChevronUp" : "ChevronDown"}
+                size={20}
+                className="text-[var(--olive)] transition-transform"
+              />
+            </div>
           </button>
 
           {suppliesOpen && (
             <div className="mt-6 grid md:grid-cols-3 gap-6">
-              <div className="bg-[var(--olive-pale)] rounded-2xl p-5">
-                <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
-                  <Icon name="Wrench" size={15} className="text-[var(--olive)]" />
-                  Инструменты
-                </h3>
-                <ul className="space-y-2">
-                  {supplies.tools.map((item) => (
-                    <li key={item} className="font-body text-sm text-[var(--graphite)] flex items-start gap-2">
-                      <span className="text-[var(--olive)] mt-0.5">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="bg-[var(--olive-pale)] rounded-2xl p-5">
-                <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
-                  <Icon name="Package" size={15} className="text-[var(--olive)]" />
-                  Добавки и специальные продукты
-                </h3>
-                <ul className="space-y-2">
-                  {supplies.products.map((item) => (
-                    <li key={item} className="font-body text-sm text-[var(--graphite)] flex items-start gap-2">
-                      <span className="text-[var(--olive)] mt-0.5">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div className="bg-[var(--olive-pale)] rounded-2xl p-5">
-                <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
-                  <Icon name="Utensils" size={15} className="text-[var(--olive)]" />
-                  Продукты питания
-                </h3>
-                <ul className="space-y-2">
-                  {supplies.food.map((item) => (
-                    <li key={item} className="font-body text-sm text-[var(--graphite)] flex items-start gap-2">
-                      <span className="text-[var(--olive)] mt-0.5">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              {(
+                [
+                  { key: "tools", label: "Инструменты", icon: "Wrench", items: supplies.tools },
+                  { key: "products", label: "Добавки и специальные продукты", icon: "Package", items: supplies.products },
+                  { key: "food", label: "Продукты питания", icon: "Utensils", items: supplies.food },
+                ] as const
+              ).map(({ key, label, icon, items }) => (
+                <div key={key} className="bg-[var(--olive-pale)] rounded-2xl p-5">
+                  <h3 className="font-body font-semibold text-[var(--graphite)] mb-3 flex items-center gap-2">
+                    <Icon name={icon} size={15} className="text-[var(--olive)]" />
+                    {label}
+                  </h3>
+                  <ul className="space-y-2">
+                    {items.map((item) => {
+                      const ck = `${key}::${item}`;
+                      const done = checked.has(ck);
+                      return (
+                        <li
+                          key={item}
+                          onClick={() => toggle(ck)}
+                          className="flex items-start gap-2 cursor-pointer group/item"
+                        >
+                          <div className={`mt-0.5 w-4 h-4 shrink-0 rounded border flex items-center justify-center transition-colors ${done ? "bg-[var(--olive)] border-[var(--olive)]" : "bg-white border-[var(--warm-gray)] group-hover/item:border-[var(--olive)]"}`}>
+                            {done && <Icon name="Check" size={10} className="text-white" />}
+                          </div>
+                          <span className={`font-body text-sm transition-colors ${done ? "line-through text-[var(--warm-gray)]" : "text-[var(--graphite)]"}`}>
+                            {item}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ))}
             </div>
           )}
         </div>
