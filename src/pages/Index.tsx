@@ -36,10 +36,10 @@ export default function Index() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              to="/modules"
+              to="/pricing"
               className="bg-[var(--olive)] text-[var(--cream)] px-8 py-3.5 rounded-lg font-body font-medium hover:bg-[var(--olive-light)] transition-colors flex items-center justify-center gap-2"
             >
-              Начать курс
+              Купить курс
               <Icon name="ArrowRight" size={18} />
             </Link>
             <Link
@@ -103,10 +103,10 @@ export default function Index() {
               Присоединяйтесь к курсу и получите все материалы, уроки и поддержку.
             </p>
             <Link
-              to="/modules"
+              to="/pricing"
               className="inline-flex items-center gap-2 bg-[var(--olive-pale)] text-[var(--graphite)] px-8 py-3.5 rounded-lg font-body font-medium hover:bg-white transition-colors"
             >
-              Перейти к модулям
+              Купить курс
               <Icon name="ArrowRight" size={18} />
             </Link>
           </div>
